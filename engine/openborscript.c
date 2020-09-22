@@ -4728,8 +4728,34 @@ HRESULT openbor_getentityproperty(ScriptVariant **varlist , ScriptVariant **pret
     }
     case _ep_animation:
     {
-        ScriptVariant_ChangeType(*pretvar, VT_PTR);
-        (*pretvar)->ptrVal = (VOID *)ent->animation;
+
+        #define ARG_ANIMATION_ID 2
+
+        // Did the user provide an animation id?
+        if(paramCount > 2)
+        {
+            arg = varlist[ARG_ANIMATION_ID];
+
+            // If the argument is invalid, use current animation ID instead.
+            if(FAILED(ScriptVariant_IntegerValue(arg, &ltemp)))
+            {
+                ltemp = (LONG)ent->animnum;
+            }
+        }
+        else
+        {
+            ltemp = (LONG)ent->animnum;
+        }
+
+        // If the animation exists, get the handle.
+        if(validanim(ent, ltemp))
+        {
+            ScriptVariant_ChangeType(*pretvar, VT_PTR);
+            (*pretvar)->ptrVal = (VOID *)ent->modeldata.animation[ltemp];
+        }
+
+        #undef ARG_ANIMATION_ID
+
         break;
     }
 
@@ -4971,7 +4997,7 @@ HRESULT openbor_getentityproperty(ScriptVariant **varlist , ScriptVariant **pret
             break;
         case _ep_attack_staydown:
             ScriptVariant_ChangeType(*pretvar, VT_PTR);
-            (*pretvar)->ptrVal = (VOID *)attack->staydown.rise;
+            (*pretvar)->ptrVal = (VOID *)(&attack->staydown);
             break;
         case _ep_attack_steal:
             ScriptVariant_ChangeType(*pretvar, VT_INTEGER);
@@ -11176,7 +11202,7 @@ HRESULT openbor_fademusic(ScriptVariant **varlist , ScriptVariant **pretvar, int
 
     if(paramCount == 4)
     {
-        strncpy(musicname, StrCache_Get(varlist[1]->strVal), 128);
+        strncpy(musicname, StrCache_Get(varlist[1]->strVal), MAX_STR_LEN - 1);
         if(FAILED(ScriptVariant_IntegerValue(varlist[2], &values[0])))
         {
             goto fademusic_error;

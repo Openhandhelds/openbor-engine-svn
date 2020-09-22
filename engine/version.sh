@@ -29,16 +29,20 @@ fi
 # Support the Bazaar VCS as an alternative to SVN through the bzr-svn plugin
 function get_revnum {
   if test -d "../.svn" || test -d "./.svn"; then
-    VERSION_BUILD=`svn info | grep "Last Changed Rev" | sed s/Last\ Changed\ Rev:\ //g`
+    VERSION_CONTROL_BUILD=`svn info | grep "Last Changed Rev" | sed s/Last\ Changed\ Rev:\ //g`
   elif test -d ".bzr"; then
-    VERSION_BUILD=`bzr version-info | grep "svn-revno" | sed 's/svn-revno: //g'`
-    if [ ! $VERSION_BUILD ]; then # use non-SVN revision number if "svn-revno" property not available
+    VERSION_CONTROL_BUILD=`bzr version-info | grep "svn-revno" | sed 's/svn-revno: //g'`
+    if [ ! $VERSION_CONTROL_BUILD ]; then # use non-SVN revision number if "svn-revno" property not available
       REVNO=`bzr version-info | grep "revno:" | sed 's/revno: //g'`
       BRANCH=`bzr version-info | grep "branch-nick:" | sed 's/branch-nick: //g'`
-      VERSION_BUILD=$REVNO-bzr-$BRANCH
+      VERSION_CONTROL_BUILD=$REVNO-bzr-$BRANCH
     fi
   elif git svn info >/dev/null 2>&1; then
-    VERSION_BUILD=`git svn info | grep "Last Changed Rev" | sed s/Last\ Changed\ Rev:\ //g`
+    VERSION_CONTROL_BUILD=`git svn info | grep "Last Changed Rev" | sed s/Last\ Changed\ Rev:\ //g`
+  elif test -d "../.git" || test -d ".git"; then
+    VERSION_CONTROL_BUILD=`git rev-list --count HEAD`
+  elif test -d "../.hg" || test -d ".hg"; then
+    VERSION_CONTROL_BUILD=$((`hg id -n` + 1))
   fi
 }
 
@@ -49,7 +53,14 @@ VERSION_NAME="OpenBOR"
 VERSION_MAJOR=3
 VERSION_MINOR=0
 VERSION_DATE=`date '+%Y%m%d%H%M%S'`
-export VERSION="v$VERSION_MAJOR.$VERSION_MINOR Build $VERSION_BUILD"
+if [ -z "$OPENBOR_REVISION" ]
+then
+  export VERSION="v$VERSION_MAJOR.$VERSION_MINOR Build $VERSION_CONTROL_BUILD"
+  export SHORT_VERSION="v"$VERSION_MAJOR"."$VERSION_MINOR"b"$VERSION_CONTROL_BUILD
+else
+  export VERSION="v$VERSION_MAJOR.$VERSION_MINOR Build $OPENBOR_REVISION.$VERSION_CONTROL_BUILD"
+  export SHORT_VERSION="v"$VERSION_MAJOR"."$VERSION_MINOR"b"$OPENBOR_REVISION"."$VERSION_CONTROL_BUILD
+fi
 }
 
 function write_version {
@@ -67,21 +78,30 @@ echo "/*
 
 #define VERSION_NAME \"$VERSION_NAME\"
 #define VERSION_MAJOR \"$VERSION_MAJOR\"
-#define VERSION_MINOR \"$VERSION_MINOR\"
-#define VERSION_BUILD \"$VERSION_BUILD\"
-#define VERSION \"v\"VERSION_MAJOR\".\"VERSION_MINOR\" Build \"VERSION_BUILD
-
+#define VERSION_MINOR \"$VERSION_MINOR\"" >> version.h
+if [ -z "$OPENBOR_REVISION" ]
+then
+echo "#define VERSION_BUILD \"$VERSION_CONTROL_BUILD\"" >> version.h
+else
+echo "#define VERSION_BUILD \"$OPENBOR_REVISION.$VERSION_CONTROL_BUILD\"" >> version.h
+fi
+echo "#define VERSION \"v\"VERSION_MAJOR\".\"VERSION_MINOR\" Build \"VERSION_BUILD
 #endif" >> version.h
 
 rm -rf resources/meta.xml
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
 <app version=\"1\">
-	<name>$VERSION_NAME</name>
-	<version>$VERSION_MAJOR.$VERSION_MINOR.$VERSION_BUILD</version>
-	<release_date>$VERSION_DATE</release_date>
+	<name>$VERSION_NAME</name>" >> resources/meta.xml
+if [ -z "$OPENBOR_REVISION" ]
+then
+echo "	<version>$VERSION_MAJOR.$VERSION_MINOR.$VERSION_CONTROL_BUILD</version>" >> resources/meta.xml
+else
+echo "	<version>$VERSION_MAJOR.$VERSION_MINOR.$OPENBOR_REVISION-$VERSION_CONTROL_BUILD</version>" >> resources/meta.xml
+fi
+echo "	<release_date>$VERSION_DATE</release_date>
 	<coder>Damon Caskey, Plombo, SX, Utunnels</coder>
 	<short_description>The Ultimate 2D Game Engine</short_description>
-	<long_description>OpenBOR is a highly advanced continuation of Senile Team's semi-2D game engine, Beats Of Rage.  Visit http://www.ChronoCrash.com for all news, events, and releases of the engine and game modules.
+	<long_description>OpenBOR is a highly advanced continuation of Senile Team's semi-2D game engine, Beats Of Rage.  Visit http://www.ChronoCrash.com for all news, events, and releases of the engine and game modules.</long_description>
 </app>" >> resources/meta.xml
 
 rm -rf resources/Info.plist
@@ -113,9 +133,14 @@ All Rights Reserved</string>
   <string>OpenBOR</string>
   <key>CFBundleExecutable</key>
   <string>OpenBOR</string>
-  <key>CFBundleVersion</key>
-  <string>$VERSION_BUILD</string>
-  <key>CFBundleDevelopmentRegion</key>
+  <key>CFBundleVersion</key>" >> resources/Info.plist
+if [ -z "$OPENBOR_REVISION" ]
+then
+echo "  <string>$VERSION_CONTROL_BUILD</string>" >> resources/Info.plist
+else
+echo "  <string>$OPENBOR_REVISION-$VERSION_CONTROL_BUILD</string>" >> resources/Info.plist
+fi
+echo "  <key>CFBundleDevelopmentRegion</key>
   <string>English</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
@@ -180,6 +205,14 @@ case $1 in
     echo "      Creating Archive OpenBOR $VERSION.7z"
     echo ------------------------------------------------------
     archive_release
+    ;;
+2)
+    export OPENBOR_REVISION=$2
+    echo -----------------------------------------------------------
+    echo "      Creating version file for OpenBOR revision $OPENBOR_REVISION"
+    echo -----------------------------------------------------------
+    read_version
+    write_version
     ;;
 *)
     read_version

@@ -54,6 +54,11 @@ unsigned readlsb32(const unsigned char *src);
 int searchList(const char *list[], const char *value, int length);
 char *commaprint(u64 n);
 
+char* safe_strncpy(char* dst, const char* src, size_t size);
+int safe_stricmp(const char *s1, const char *s2);
+int safe_strnicmp(const char *s1, const char *s2, size_t n);
+int32_t safe_atoi(char* str, unsigned char* errSeveralSigns, unsigned char* errInvalidNumberFound, unsigned char* errOverflow);
+
 void Array_Check_Size( const char *f_caller, char **array, int new_size, int *curr_size_allocated, int grow_step );
 //math
 float invsqrt(float x);

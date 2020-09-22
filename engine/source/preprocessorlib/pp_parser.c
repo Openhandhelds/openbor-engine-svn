@@ -703,20 +703,26 @@ HRESULT pp_parser_stringify(pp_parser *self)
     {
         char *source = token->theSource;
         bool in_string = false;
+	size_t pos = 0;
         while(*source)
         {
             if(*source == '"')
             {
-                strncat(self->token.theSource, "\\\"", 2);
+                strcat(self->token.theSource, "\\\"");
                 in_string = !in_string;
+		pos += 2;
             }
             else if(*source == '\\' && in_string)
             {
-                strncat(self->token.theSource, "\\\\", 2);
+                strcat(self->token.theSource, "\\\\");
+		pos += 2;
             }
             else
             {
-                strncat(self->token.theSource, source, 1);
+                memcpy(self->token.theSource + pos, source, 1);
+                pos ++;
+                memset(self->token.theSource + pos, '\0', 1);
+
             }
 
             if(strlen(self->token.theSource) + 2 > MAX_TOKEN_LENGTH)
@@ -728,7 +734,7 @@ HRESULT pp_parser_stringify(pp_parser *self)
         }
     }
 
-    strncat(self->token.theSource, "\"", 1);
+    strcat(self->token.theSource, "\"");
     return S_OK;
 }
 

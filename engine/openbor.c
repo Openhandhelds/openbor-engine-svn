@@ -188,10 +188,10 @@ char                *custBkgrds = NULL;
 char                *custLevels = NULL;
 char                *custModels = NULL;
 char                rush_names[2][MAX_NAME_LEN];
-char				skipselect[MAX_PLAYERS][MAX_NAME_LEN];
-char                branch_name[MAX_NAME_LEN + 1];  // Used for branches
-int					useSave = 0;
-int					useSet = -1;
+char                skipselect[MAX_PLAYERS][MAX_NAME_LEN];
+char                branch_name[MAX_NAME_LEN];  // Used for branches
+int                 useSave = 0;
+int                 useSet = -1;
 unsigned char       pal[MAX_PAL_SIZE] = {""};
 int                 blendfx[MAX_BLENDINGS] = {0, 1, 0, 0, 0, 0};
 char                blendfx_is_set = 0;
@@ -424,7 +424,7 @@ int					gameOver			= 0;
 int					showComplete		= 0;
 char				*currentScene		= NULL;
 int                 tospeedup           = 0;          			// If set will speed the level back up after a boss hits the ground
-int                 reached[4]          = {0, 0, 0, 0};			// Used with TYPE_ENDLEVEL to determine which players have reached the point //4player
+int                 reached[MAX_PLAYERS]        = {0, 0, 0, 0};			// Used with TYPE_ENDLEVEL to determine which players have reached the point //4player
 int                 noslowfx			= 0;           			// Flag to determine if sound speed when hitting opponent slows or not
 int                 equalairpause 		= 0;         			// If set to 1, there will be no extra pausetime for players who hit multiple enemies in midair
 int                 hiscorebg			= 0;					// If set to 1, will look for a background image to display at the highscore screen
@@ -461,22 +461,22 @@ entity				*stalker				= NULL;					// an enemy (usually) tries to go behind the p
 entity				*firstplayer			= NULL;
 int					stalking			= 0;
 int					nextplan			= 0;
-int                 plife[4][2]         = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; // Used for customizable player lifebar
-int                 plifeX[4][3]        = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}}; // Used for customizable player lifebar 'x'
-int                 plifeN[4][3]        = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}}; // Used for customizable player lifebar number of lives
-int                 picon[4][2]         = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; // Used for customizable player icon
-int                 piconw[4][2]        = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; // Used for customizable player weapon icons
-int                 mpicon[4][2]        = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; // Used for customizable magicbar player icon
-int                 pnameJ[4][7]        = {{0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}}; // Used for customizable player name, Select Hero, (Credits, Press Start, Game Over) when joining
-int                 pscore[4][7]        = {{0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}}; // Used for customizable player name, dash, score
-int                 pshoot[4][3]        = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}}; // Used for customizable player shootnum
-int                 prush[4][8]         = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}}; // Used for customizable player combo/rush system
-int                 psmenu[4][4]        = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}; // Used for customizable player placement in select menu
+int                 plife[MAX_PLAYERS][2]         = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; // Used for customizable player lifebar
+int                 plifeX[MAX_PLAYERS][3]        = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}}; // Used for customizable player lifebar 'x'
+int                 plifeN[MAX_PLAYERS][3]        = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}}; // Used for customizable player lifebar number of lives
+int                 picon[MAX_PLAYERS][2]         = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; // Used for customizable player icon
+int                 piconw[MAX_PLAYERS][2]        = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; // Used for customizable player weapon icons
+int                 mpicon[MAX_PLAYERS][2]        = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; // Used for customizable magicbar player icon
+int                 pnameJ[MAX_PLAYERS][7]        = {{0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}}; // Used for customizable player name, Select Hero, (Credits, Press Start, Game Over) when joining
+int                 pscore[MAX_PLAYERS][7]        = {{0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, 0, -1}}; // Used for customizable player name, dash, score
+int                 pshoot[MAX_PLAYERS][3]        = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}}; // Used for customizable player shootnum
+int                 prush[MAX_PLAYERS][8]         = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}}; // Used for customizable player combo/rush system
+int                 psmenu[MAX_PLAYERS][4]        = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}; // Used for customizable player placement in select menu
 int                 mpcolourtable[11]   = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int                 hpcolourtable[11]   = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int                 ldcolourtable[11]   = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-char                musicname[128]      = {""};
-char                currentmusic[128]    = {""};
+char                musicname[MAX_BUFFER_LEN]      = {""};
+char                currentmusic[MAX_BUFFER_LEN]    = {""};
 float               musicfade[2]        = {0, 0};
 int                 musicloop           = 0;
 u32                 musicoffset         = 0;
@@ -536,13 +536,13 @@ s_barstatus mpbarstatus =
 int                 timeloc[6]			= {0, 0, 0, 0, 0, -1};		// Used for customizable timeclock location/size
 int                 timeicon			= -1;
 int                 timeicon_offsets[2] = {0, 0};
-char                timeicon_path[128]  = {""};
+char                timeicon_path[MAX_BUFFER_LEN]  = {""};
 int                 bgicon   			= -1;
 int                 bgicon_offsets[3]	= {0, 0, 0};
-char                bgicon_path[128]    = {""};
+char                bgicon_path[MAX_BUFFER_LEN]    = {""};
 int                 olicon    			= -1;
 int                 olicon_offsets[3]	= {0, 0, 0};
-char                olicon_path[128]    = {""};
+char                olicon_path[MAX_BUFFER_LEN]    = {""};
 int                 elife[4][2]         = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; // Used for customizable enemy lifebar
 int                 ename[4][3]         = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}}; // Used for customizable enemy name
 int                 eicon[4][2]         = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}; // Used for customizable enemy icon
@@ -627,7 +627,7 @@ entity             *self;
 int                 ent_count			= 0;					// log count of entites
 int                 ent_max				= 0;
 
-s_player            player[4];
+s_player            player[MAX_PLAYERS];
 u32                 bothkeys, bothnewkeys;
 
 s_playercontrols    playercontrols1;
@@ -647,11 +647,11 @@ Script key_script_all;  //keyscript for all players
 Script timetick_script; //time tick script.
 
 //player script
-Script score_script[4];     //execute when add score, 4 players
-Script key_script[4];       //key listeners, lol
-Script join_script[4];      //player join scripts
-Script respawn_script[4];   //player respawn scripts
-Script pdie_script[4];      //player death scripts
+Script score_script[MAX_PLAYERS];     //execute when add score, 4 players
+Script key_script[MAX_PLAYERS];       //key listeners, lol
+Script join_script[MAX_PLAYERS];      //player join scripts
+Script respawn_script[MAX_PLAYERS];   //player respawn scripts
+Script pdie_script[MAX_PLAYERS];      //player death scripts
 
 extern Script *pcurrentscript;//used by local script functions
 //-------------------------methods-------------------------------
@@ -1623,23 +1623,23 @@ void init_scripts()
     Script_Init(&key_script_all,    "keyall",   NULL,  1);
     Script_Init(&timetick_script,   "timetick",  NULL, 1);
     Script_Init(&loading_script,    "loading",   NULL, 1);
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Init(&score_script[i],    "score",    NULL,  1);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Init(&key_script[i],      "key",      NULL,  1);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Init(&join_script[i],     "join",      NULL, 1);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Init(&respawn_script[i],  "respawn",   NULL, 1);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Init(&pdie_script[i],     "die",       NULL, 1);
     }
@@ -1768,26 +1768,33 @@ void load_scripts()
     Script_Compile(&key_script_all);
     Script_Compile(&timetick_script);
     Script_Compile(&loading_script);
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Compile(&score_script[i]);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Compile(&key_script[i]);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Compile(&join_script[i]);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Compile(&respawn_script[i]);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Compile(&pdie_script[i]);
     }
+}
+
+void unfrozen(entity *e)
+{
+    ent_set_colourmap(e, e->map);
+    e->frozen = 0;
+    e->freezetime = 0;
 }
 
 // This method is called once when the engine is shutting down, do not use it multiple times
@@ -1803,23 +1810,23 @@ void clear_scripts()
     Script_Clear(&key_script_all,   2);
     Script_Clear(&timetick_script,  2);
     Script_Clear(&loading_script,   2);
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Clear(&score_script[i],      2);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Clear(&key_script[i],        2);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Clear(&join_script[i],       2);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Clear(&respawn_script[i],    2);
     }
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < MAX_PLAYERS; i++)
     {
         Script_Clear(&pdie_script[i],       2);
     }
@@ -2791,8 +2798,8 @@ void savesettings()
 {
 #ifndef DC
     FILE *handle = NULL;
-    char path[128] = {""};
-    char tmpname[128] = {""};
+    char path[MAX_BUFFER_LEN] = {""};
+    char tmpname[MAX_BUFFER_LEN] = {""};
     getBasePath(path, "Saves", 0);
     getPakName(tmpname, 4);
     strcat(path, tmpname);
@@ -2810,9 +2817,9 @@ void saveasdefault()
 {
 #ifndef DC
     FILE *handle = NULL;
-    char path[128] = {""};
+    char path[MAX_BUFFER_LEN] = {""};
     getBasePath(path, "Saves", 0);
-    strncat(path, "default.cfg", 128);
+    strcat(path, "default.cfg");
     handle = fopen(path, "wb");
     if(handle == NULL)
     {
@@ -2828,8 +2835,8 @@ void loadsettings()
 {
 #ifndef DC
     FILE *handle = NULL;
-    char path[128] = {""};
-    char tmpname[128] = {""};
+    char path[MAX_BUFFER_LEN] = {""};
+    char tmpname[MAX_BUFFER_LEN] = {""};
     getBasePath(path, "Saves", 0);
     getPakName(tmpname, 4);
     strcat(path, tmpname);
@@ -2859,9 +2866,9 @@ void loadfromdefault()
 {
 #ifndef DC
     FILE *handle = NULL;
-    char path[128] = {""};
+    char path[MAX_BUFFER_LEN] = {""};
     getBasePath(path, "Saves", 0);
-    strncat(path, "default.cfg", 128);
+    strcat(path, "default.cfg");
     clearsettings();
     handle = fopen(path, "rb");
     if(handle == NULL)
@@ -2906,8 +2913,8 @@ int saveGameFile()
 {
 #ifndef DC
     FILE *handle = NULL;
-    char path[256] = {""};
-    char tmpname[256] = {""};
+    char path[MAX_BUFFER_LEN] = {""};
+    char tmpname[MAX_BUFFER_LEN] = {""};
     getBasePath(path, "Saves", 0);
     getPakName(tmpname, 0);
     strcat(path, tmpname);
@@ -2931,8 +2938,8 @@ int loadGameFile()
 #ifndef DC
     int result = 1, i;
     FILE *handle = NULL;
-    char path[256] = {""};
-    char tmpname[256] = {""};
+    char path[MAX_BUFFER_LEN] = {""};
+    char tmpname[MAX_BUFFER_LEN] = {""};
     getBasePath(path, "Saves", 0);
     getPakName(tmpname, 0);
     strcat(path, tmpname);
@@ -2967,8 +2974,8 @@ int saveHighScoreFile()
 {
 #ifndef DC
     FILE *handle = NULL;
-    char path[256] = {""};
-    char tmpname[256] = {""};
+    char path[MAX_BUFFER_LEN] = {""};
+    char tmpname[MAX_BUFFER_LEN] = {""};
     getBasePath(path, "Saves", 0);
     getPakName(tmpname, 1);
     strcat(path, tmpname);
@@ -2990,8 +2997,8 @@ int loadHighScoreFile()
 {
 #ifndef DC
     FILE *handle = NULL;
-    char path[256] = {""};
-    char tmpname[256] = {""};
+    char path[MAX_BUFFER_LEN] = {""};
+    char tmpname[MAX_BUFFER_LEN] = {""};
     getBasePath(path, "Saves", 0);
     getPakName(tmpname, 1);
     strcat(path, tmpname);
@@ -3076,8 +3083,8 @@ int saveScriptFile()
     FILE *handle = NULL;
     int i, l, size;
     ScriptVariant *var;
-    char path[256] = {""};
-    char tmpvalue[256] = {""};
+    char path[MAX_BUFFER_LEN] = {""};
+    char tmpvalue[MAX_BUFFER_LEN] = {""};
     getBasePath(path, "Saves", 0);
     getPakName(tmpvalue, 2);//.scr
     strcat(path, tmpvalue);
@@ -3159,8 +3166,8 @@ int loadScriptFile()
     size_t len;
     FILE *handle = NULL;
 
-    char path[256] = {""};
-    char tmpname[256] = {""};
+    char path[MAX_BUFFER_LEN] = {""};
+    char tmpname[MAX_BUFFER_LEN] = {""};
     getBasePath(path, "Saves", 0);
     getPakName(tmpname, 2);//.scr
     strcat(path, tmpname);
@@ -3297,14 +3304,21 @@ int isNumeric(char *text)
 
 int getValidInt(char *text, char *file, char *cmd)
 {
-    static const char *WARN_NUMBER_EXPECTED = "WARNING: %s tries to load a nonnumeric value at %s, where a number is expected!\nerroneus string: %s\n";
+    static const char *WARN_NUMBER_EXPECTED = "WARNING: %s tries to load a non-numeric value at %s, where a number is expected!\nerroneus string: %s\n";
+    static const char *WARN_NUMBER_OVERFLOW = "WARNING: %s tries to load a numeric value at %s but overflow occurred!\nerroneus string: %s not in [%d, %d]\n";
     if(!text || !*text)
     {
         return 0;
     }
     if(isNumeric(text))
     {
-        return atoi(text);
+        unsigned char errSeveralSigns, errInvalidNumberFound, errOverflow;
+        int returnInt = safe_atoi(text, &errSeveralSigns, &errInvalidNumberFound, &errOverflow);
+        if(errSeveralSigns == UCHAR_MAX || errInvalidNumberFound == UCHAR_MAX)
+            printf(WARN_NUMBER_EXPECTED, file, cmd, text);
+        if(errOverflow == UCHAR_MAX)
+            printf(WARN_NUMBER_OVERFLOW, file, cmd, text, INT32_MIN, INT32_MAX);
+        return returnInt;
     }
     else
     {
@@ -3316,7 +3330,7 @@ int getValidInt(char *text, char *file, char *cmd)
 
 float getValidFloat(char *text, char *file, char *cmd)
 {
-    static const char *WARN_NUMBER_EXPECTED = "WARNING: %s tries to load a nonnumeric value at %s, where a number is expected!\nerroneus string: %s\n";
+    static const char *WARN_NUMBER_EXPECTED = "WARNING: %s tries to load a non-numeric value at %s, where a number is expected!\nerroneus string: %s\n";
     if(!text || !*text)
     {
         return 0.0f;
@@ -4573,7 +4587,7 @@ void unload_all_fonts()
 
 void load_all_fonts()
 {
-    char path[256];
+    char path[MAX_BUFFER_LEN];
     int i;
 
     for(i = 0; i < MAX_FONTS; i++)
@@ -7190,9 +7204,9 @@ s_model *load_cached_model(char *name, char *owner, char unload)
               *value2 = NULL,
                *value3 = NULL;
 
-    char fnbuf[128] = {""},
-                      namebuf[256] = {""},
-                                     argbuf[MAX_ARG_LEN + 1] = {""};
+    char fnbuf[MAX_BUFFER_LEN] = {""},
+         namebuf[MAX_BUFFER_LEN] = {""},
+         argbuf[MAX_ARG_LEN + 1] = {""};
 
     ArgList arglist;
 
@@ -7682,10 +7696,10 @@ s_model *load_cached_model(char *name, char *owner, char unload)
                 value = GET_ARG(1);
                 if(!newchar->branch)
                 {
-                    newchar->branch = malloc(MAX_NAME_LEN + 1);
+                    newchar->branch = malloc(MAX_NAME_LEN);
                     newchar->branch[0] = 0;
                 }
-                strncpy(newchar->branch, value, MAX_NAME_LEN);
+                strncpy(newchar->branch, value, MAX_NAME_LEN - 1);
                 break;
             case CMD_MODEL_CANTGRAB:
             case CMD_MODEL_NOTGRAB:
@@ -9959,7 +9973,7 @@ int load_script_setting()
 
 void load_model_constants()
 {
-    char filename[128] = "data/models.txt";
+    char filename[MAX_BUFFER_LEN] = "data/models.txt";
     int i;
     char *buf;
     size_t size;
@@ -10262,7 +10276,7 @@ void load_model_constants()
 // Load / cache all models
 int load_models()
 {
-    char filename[128] = "data/models.txt";
+    char filename[MAX_BUFFER_LEN] = "data/models.txt";
     int i;
     char *buf;
     size_t size;
@@ -10270,7 +10284,7 @@ int load_models()
     char *command;
     int line = 0;
 
-    char tmpBuff[128] = {""};
+    char tmpBuff[MAX_BUFFER_LEN] = {""};
 
     ArgList arglist;
     char argbuf[MAX_ARG_LEN + 1] = "";
@@ -10722,7 +10736,7 @@ void load_levelorder()
 {
     static const char *defaulterr = "Error in level order: a set must be specified.";
 #define CHKDEF if(!set) { errormessage = (char*) defaulterr; goto lCleanup; }
-    char filename[128] = "";
+    char filename[MAX_BUFFER_LEN] = "";
     int i = 0, j = 0;
     char *buf;
     size_t size;
@@ -10929,7 +10943,7 @@ void load_levelorder()
         case CMD_LEVELORDER_BRANCH:
             //    2007-2-22 level branch name
             CHKDEF;
-            strncpy(branch_name, GET_ARG(1), MAX_NAME_LEN);
+            strncpy(branch_name, GET_ARG(1), MAX_NAME_LEN - 1);
             break;
         case CMD_LEVELORDER_P1LIFE:
         case CMD_LEVELORDER_P2LIFE:
@@ -11367,7 +11381,7 @@ void load_levelorder()
             default:
                 assert(0);
             }
-            for(i = 0; i < 4; i++)
+            for(i = 0; i < MAX_PLAYERS; i++)
                 if((arg = GET_ARG(i + 1))[0])
                 {
                     psmenu[j][i] = atoi(arg);
@@ -11587,10 +11601,10 @@ void load_levelorder()
         case CMD_LEVELORDER_RUSH:
             rush[0] = GET_INT_ARG(1);
             rush[1] = GET_INT_ARG(2);
-            strncpy(rush_names[0], GET_ARG(3), MAX_NAME_LEN);
+            strncpy(rush_names[0], GET_ARG(3), MAX_NAME_LEN - 1);
             rush[2] = GET_INT_ARG(4);
             rush[3] = GET_INT_ARG(5);
-            strncpy(rush_names[1], GET_ARG(6), MAX_NAME_LEN);
+            strncpy(rush_names[1], GET_ARG(6), MAX_NAME_LEN - 1);
             rush[4] = GET_INT_ARG(7);
             rush[5] = GET_INT_ARG(8);
             break;
@@ -11621,7 +11635,7 @@ void load_levelorder()
         default:
             if (command && command[0])
             {
-                printf("Command '%s' not understood in level order!", command);
+                printf("Command '%s' not understood in level order!\n", command);
             }
         }
 
@@ -12128,21 +12142,21 @@ static void addwall(float x, float z, float x1, float x2, float x3, float x4, fl
 
 void load_level(char *filename)
 {
-    char *buf;
+    char *buf = NULL;
     size_t size, len, sblen;
     ptrdiff_t pos, oldpos;
     char *command;
     char *value;
     char *scriptbuf = NULL;
-    char string[128] = {""};
+    char string[MAX_BUFFER_LEN] = {""};
     s_spawn_entry next;
     s_model *tempmodel, *cached_model;
 
     int i = 0, j = 0, crlf = 0;
     int usemap[MAX_BLENDINGS];
-    char bgPath[128] = {""}, fnbuf[128];
+    char bgPath[MAX_BUFFER_LEN] = {""}, fnbuf[MAX_BUFFER_LEN];
     s_loadingbar bgPosi = {0, 0, {0,0}, {0,0}, 0, 0};
-    char musicPath[128] = {""};
+    char musicPath[MAX_BUFFER_LEN] = {""};
     u32 musicOffset = 0;
 
     ArgList arglist;
@@ -12163,7 +12177,7 @@ void load_level(char *filename)
     int *order = NULL;
     int panelcount = 0;
     int exit_blocked = 0, exit_hole = 0;
-    char maskPath[128] = {""};
+    char maskPath[MAX_BUFFER_LEN] = {""};
 
     unload_level();
 
@@ -12275,7 +12289,7 @@ void load_level(char *filename)
             break;
         case CMD_LEVEL_MUSIC:
             value = GET_ARG(1);
-            strncpy(string, value, 128);
+            strncpy(string, value, MAX_BUFFER_LEN - 1);
             musicOffset = atol(GET_ARG(2));
             if(loadingmusic)
             {
@@ -12305,12 +12319,12 @@ void load_level(char *filename)
                     {
                         memset(&next, 0, sizeof(next));
                     }
-                    strncpy(next.music, string, 128);
+                    strncpy(next.music, string, MAX_BUFFER_LEN);
                     next.musicoffset = musicOffset;
                 }
                 else
                 {
-                    strncpy(musicPath, string, 128);
+                    strncpy(musicPath, string, MAX_BUFFER_LEN);
                 }
                 pos = oldpos;
 #undef GET_ARG2
@@ -12334,7 +12348,7 @@ void load_level(char *filename)
             }
             break;
         case CMD_LEVEL_ALPHAMASK:
-            strncpy(maskPath, GET_ARG(1), 128);
+            strncpy(maskPath, GET_ARG(1), MAX_BUFFER_LEN - 1);
             break;
         case CMD_LEVEL_BACKGROUND:
         case CMD_LEVEL_BGLAYER:
@@ -12981,7 +12995,7 @@ void load_level(char *filename)
             break;
         case CMD_LEVEL_ALIAS:
             // Alias (name displayed) of entry to be spawned
-            strncpy(next.alias, GET_ARG(1), MAX_NAME_LEN);
+            strncpy(next.alias, GET_ARG(1), MAX_NAME_LEN - 1);
             break;
         case CMD_LEVEL_MAP:
             // Colourmap for new entry
@@ -13046,7 +13060,7 @@ void load_level(char *filename)
             next.itemhealth = GET_INT_ARG(1);
             break;
         case CMD_LEVEL_ITEMALIAS:
-            strncpy(next.itemalias, GET_ARG(1), MAX_NAME_LEN);
+            strncpy(next.itemalias, GET_ARG(1), MAX_NAME_LEN - 1);
             break;
         case CMD_LEVEL_WEAPON:
             //spawn with a weapon 2007-2-12 by UTunnels
@@ -13201,7 +13215,7 @@ void load_level(char *filename)
         {
             __realloc(level->layersref, level->numlayersref);
             level->layersref[level->numlayersref] = *(level->background);
-            level->background = (s_layer *)level->numlayersref++;
+            level->background = (s_layer *)(size_t)level->numlayersref++;
         }
 
 
@@ -13218,25 +13232,25 @@ void load_level(char *filename)
                 {
                 case BGT_BGLAYER:
                     __realloc(level->bglayers, level->numbglayers);
-                    level->bglayers[level->numbglayers++] = (s_layer *)level->numlayersref;
+                    level->bglayers[level->numbglayers++] = (s_layer *)(size_t)level->numlayersref;
                     break;
                 case BGT_FGLAYER:
                     __realloc(level->fglayers, level->numfglayers);
-                    level->fglayers[level->numfglayers++] = (s_layer *)level->numlayersref;
+                    level->fglayers[level->numfglayers++] = (s_layer *)(size_t)level->numlayersref;
                     break;
                 case BGT_WATER:
                     __realloc(level->waters, level->numwaters);
-                    level->waters[level->numwaters++] = (s_layer *)level->numlayersref;
+                    level->waters[level->numwaters++] = (s_layer *)(size_t)level->numlayersref;
                     break;
                 case BGT_GENERIC:
                     __realloc(level->genericlayers, level->numgenericlayers);
-                    level->genericlayers[level->numgenericlayers++] = (s_layer *)level->numlayersref;
+                    level->genericlayers[level->numgenericlayers++] = (s_layer *)(size_t)level->numlayersref;
                     break;
                 case BGT_FRONTPANEL:
                     bgl->offset.x = level->numfrontpanels * bgl->size.x;
                     bgl->spacing.x = (frontpanels_loaded - 1) * bgl->size.x;
                     __realloc(level->frontpanels, level->numfrontpanels);
-                    level->frontpanels[level->numfrontpanels++] = (s_layer *)level->numlayersref;
+                    level->frontpanels[level->numfrontpanels++] = (s_layer *)(size_t)level->numlayersref;
                     break;
                 default:
                     break;
@@ -13256,7 +13270,7 @@ void load_level(char *filename)
                     level->layersref[level->numlayersref] = level->layers[panels[order[i]][j]];
                     bgl = &(level->layersref[level->numlayersref]);
                     bgl->offset.x = panel_width * i;
-                    level->panels[i][j] = (s_layer *)level->numlayersref;
+                    level->panels[i][j] = (s_layer *)(size_t)level->numlayersref;
                     level->numlayersref++;
                 }
             }
@@ -13663,7 +13677,7 @@ void updatestatus()
             {
                 player[i].lives = 0;
                 model = skipselect[i][0] ? findmodel(skipselect[i]) : nextplayermodeln(NULL, i);
-                strncpy(player[i].name, model->name, MAX_NAME_LEN);
+                strncpy(player[i].name, model->name, MAX_NAME_LEN - 1);
                 player[i].colourmap = (colourselect && (set->nosame & 2)) ? nextcolourmap(model, i - 1) : 0;
                 player[i].joining = 1;
                 player[i].playkeys = player[i].newkeys = player[i].releasekeys = 0;
@@ -15419,7 +15433,7 @@ entity *spawn(float x, float z, float a, int direction, char *name, int index, s
                 textbox = e;
             }
 
-            strncpy(e->name, e->modeldata.name, MAX_NAME_LEN);
+            strncpy(e->name, e->modeldata.name, MAX_NAME_LEN - 1);
             // copy back the value
             e->sortid = id;
             e->defense = dfs;
@@ -17638,7 +17652,7 @@ void common_dot()
     entity     *eOpp;       //Owner of dot effect.
     s_attack    attack;     //Attack struct.
 
-    for(iIndex = 0; iIndex <= MAX_DOTS; iIndex++)                                               //Loop through all DOT indexes.
+    for(iIndex = 0; iIndex < MAX_DOTS; iIndex++)                                               //Loop through all DOT indexes.
     {
         iDot_time   =   self->dot_time[iIndex];                                                 //Get expire time.
         iDot_cnt    =   self->dot_cnt[iIndex];                                                  //Get next tick time.
@@ -24187,10 +24201,7 @@ void didfind_item(entity *other)
         if(self->weapent && self->weapent->modeldata.typeshot)
         {
             self->weapent->modeldata.shootnum += other->modeldata.reload;
-            if(self->weapent->modeldata.shootnum > self->weapent->modeldata.shootnum)
-            {
-                self->weapent->modeldata.shootnum = self->weapent->modeldata.shootnum;
-            }
+
             if(SAMPLE_GET >= 0)
             {
                 sound_play_sample(SAMPLE_GET, 0, savedata.effectvol, savedata.effectvol, 100);
@@ -25028,7 +25039,7 @@ void player_think()
 
             if(other->modeldata.branch)
             {
-                strncpy( branch_name, other->modeldata.branch, MAX_NAME_LEN);    //now, you can branch to another level
+                strncpy( branch_name, other->modeldata.branch, MAX_NAME_LEN - 1);    //now, you can branch to another level
             }
             return;
         }
@@ -27041,7 +27052,7 @@ void update_scroller()
             }
             else if(level->spawnpoints[current_spawn].music[0])
             {
-                strncpy(musicname, level->spawnpoints[current_spawn].music, 128);
+                strncpy(musicname, level->spawnpoints[current_spawn].music, MAX_BUFFER_LEN);
                 musicoffset = level->spawnpoints[current_spawn].musicoffset;
                 musicloop = 1;
             }
@@ -28886,7 +28897,7 @@ void playscene(char *filename)
     size_t size;
     int pos;
     char *command = NULL;
-    char giffile[256];
+    char giffile[MAX_BUFFER_LEN];
     int x = 0, y = 0, skipone = 0, noskip = 0, i;
     int closing = 0;
 
@@ -28956,7 +28967,7 @@ void playscene(char *filename)
 void gameover()
 {
     int done = 0;
-    char tmpBuff[128] = {""};
+    char tmpBuff[MAX_BUFFER_LEN] = {""};
 
     music("data/music/gameover", 0, 0);
 
@@ -29003,7 +29014,7 @@ void hallfame(int addtoscore)
     u32 score;
     char name[MAX_NAME_LEN + 1];
     int i, p, y;
-    char tmpBuff[128] = {""};
+    char tmpBuff[MAX_BUFFER_LEN] = {""};
     int col1 = -8;
     int col2 = 6;
 
@@ -29089,7 +29100,7 @@ void showcomplete(int num)
     u32 nexttime = 0;
     u32 finishtime = 0;
     int chan = 0;
-    char tmpBuff[128] = {""};
+    char tmpBuff[MAX_BUFFER_LEN] = {""};
 
     showComplete = 1;
 
@@ -29254,13 +29265,13 @@ void savelevelinfo()
         save->pSpawnmp[i] = player[i].spawnmp;
         save->pWeapnum[i] = player[i].weapnum;
         save->pColourmap[i] = player[i].colourmap;
-        strncpy(save->pName[i], player[i].name, MAX_NAME_LEN);
+        safe_strncpy(save->pName[i], player[i].name, MAX_NAME_LEN);
     }
     save->credits = credits;
     save->level = current_level;
     save->stage = current_stage;
     save->which_set = current_set;
-    strncpy(save->dName, set->name, MAX_NAME_LEN);
+    strncpy(save->dName, set->name, MAX_NAME_LEN - 1);
 }
 
 
@@ -29380,7 +29391,7 @@ int selectplayer(int *players, char *filename)
     unsigned exitdelay = 0;
     int players_busy = 0;
     int players_ready = 0;
-    char string[128] = {""};
+    char string[MAX_BUFFER_LEN] = {""};
     char *buf, *command;
     size_t size = 0;
     ptrdiff_t pos = 0;
@@ -29929,7 +29940,7 @@ int choose_difficulty()
             else if(bonus >= levelsets[selector].ifcomplete)
             {
                 saveslot = selector;
-                strncpy(savelevel[saveslot].dName, levelsets[saveslot].name, MAX_NAME_LEN + 1);
+                strncpy(savelevel[saveslot].dName, levelsets[saveslot].name, MAX_NAME_LEN - 1);
                 newgameMenu = 0;
                 return saveslot;
             }
@@ -29980,7 +29991,7 @@ int choose_difficulty()
             else if(bonus >= levelsets[selector].ifcomplete)
             {
                 saveslot = selector;
-                strncpy(savelevel[saveslot].dName, levelsets[saveslot].name, MAX_NAME_LEN + 1);
+                strncpy(savelevel[saveslot].dName, levelsets[saveslot].name, MAX_NAME_LEN - 1);
                 newgameMenu = 0;
                 return saveslot;
             }
@@ -29996,7 +30007,7 @@ int load_saved_game()
     int quit = 0;
     int selector = 0;
     int savedStatus = 0;
-    char name[256] = {""};
+    char name[MAX_BUFFER_LEN] = {""};
     int col1 = -8, col2 = 6;
 
     loadgameMenu = 1;
@@ -32245,7 +32256,7 @@ void openborMain(int argc, char **argv)
     int selector = 0;
     u32 introtime = 0;
     int started = 0;
-    char tmpBuff[128] = {""};
+    char tmpBuff[MAX_BUFFER_LEN] = {""};
     int players[MAX_PLAYERS] = {0, 0, 0, 0};
     int i;
     int argl;
@@ -32441,7 +32452,9 @@ void openborMain(int argc, char **argv)
                 {
                     int previousLoop = musicloop;
                     char previousMusic[sizeof(currentmusic)];
-                    strncpy(previousMusic, currentmusic, sizeof(previousMusic) - 1);
+
+                    memset(previousMusic, 0, sizeof(previousMusic));
+                    strcpy(previousMusic, currentmusic);
 
                     if(custScenes != NULL)
                     {

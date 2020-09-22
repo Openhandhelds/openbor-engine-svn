@@ -18,13 +18,12 @@
 
 #ifdef OPENGL
 
-#include "SDL.h"
-#include <math.h>
+#include "sdlport.h"
 #include "openbor.h"
 #include "opengl.h"
 #include "video.h"
-#include "sdlport.h"
 #include "loadgl.h"
+#include <math.h>
 
 #ifdef SDL2
 #include "SDL2_framerate.h"

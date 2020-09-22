@@ -94,8 +94,8 @@ PFNGLUNIFORM1FARBPROC glUniform1fARB;
 PFNGLUNIFORM4FARBPROC glUniform4fARB;
 #endif
 
-#define LOADFUNC(X,Y) Y = GetProcAddress(X); if(!Y) { printf("Failed to load OpenGL function " X "..."); return 0; }
-#define LOADFUNC2(X) X = GetProcAddress(#X); if(!X) { printf("Failed to load OpenGL function " #X "..."); return 0; }
+#define LOADFUNC(X,Y) { Y = GetProcAddress(X); if(!Y) { printf("Failed to load OpenGL function " X "..."); return 0; } }
+#define LOADFUNC2(X) { X = GetProcAddress(#X); if(!X) { printf("Failed to load OpenGL function " #X "..."); return 0; } }
 
 int LoadGLFunctions()
 {

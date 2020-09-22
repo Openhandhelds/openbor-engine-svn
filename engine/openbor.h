@@ -68,7 +68,7 @@
 #define     GAME_SPEED          200
 #define		THINK_SPEED			2
 #define		COUNTER_SPEED		(GAME_SPEED*2)
-#define		MAX_NAME_LEN		47
+#define		MAX_NAME_LEN		50 //47
 #define		MAX_ENTS			150
 #define		MAX_SPECIALS		8					// Added for customizable freespecials
 #define     MAX_SPECIAL_INPUTS  27                  // max freespecial input steps, MAX_SPECIAL_INPUTS-1 is reserved, MAX_SPECIAL_INPUTS-2 is animation index, MAX_SPECIAL_INPUTS-3 is reserved. OX -4 , -5 , -6 , -7 , -8 , -9 , -10 also for cancels
@@ -81,7 +81,7 @@
 #define		MAX_ATTACKS			4					// Total number of attacks players have
 #define     MAX_FOLLOWS         4					// For followup animations
 #define     MAX_PLAYERS         4
-#define		MAX_ARG_LEN			511
+#define		MAX_ARG_LEN			512
 #define		MAX_PAL_SIZE		1024
 #define		MAX_CACHED_BACKGROUNDS 9
 #define     MAX_DOTS            10                  // Max active dot effects.
@@ -939,11 +939,6 @@ if(n<1) n = 1;
 		 !inair(self) && \
 		 diff(other->position.y, self->position.y) <= 0.1)
 
-#define unfrozen(e) \
-		ent_set_colourmap(e, e->map);\
-		e->frozen = 0;\
-		e->freezetime = 0;
-
 #define validanim(e, a) ((e)->modeldata.animation[a]&&(e)->modeldata.animation[a]->numframes)
 
 //#define     MAX_MOVES             16
@@ -1093,7 +1088,7 @@ typedef struct
 typedef struct
 {
     unsigned compatibleversion;
-    char dName[MAX_NAME_LEN + 1]; // Difficulty Name
+    char dName[MAX_NAME_LEN]; // Difficulty Name
     unsigned level; // Level Number
     unsigned stage; // Stage
     unsigned pLives[MAX_PLAYERS]; // Player Lives Left
@@ -1104,7 +1099,7 @@ typedef struct
     unsigned which_set;
     //-------------------new strict save features-----------------------
     int flag; // 0 useless slot 1 only load level number 2 load player info and level
-    char pName[MAX_PLAYERS][MAX_NAME_LEN + 1];   // player names
+    char pName[MAX_PLAYERS][MAX_NAME_LEN];   // player names
     int pSpawnhealth[MAX_PLAYERS];              // hit points left
     int pSpawnmp[MAX_PLAYERS];                  // magic points left
     int pWeapnum[MAX_PLAYERS];                  // weapon
@@ -1115,7 +1110,7 @@ typedef struct
 {
     unsigned compatibleversion;
     unsigned highsc[10];
-    char hscoren[10][MAX_NAME_LEN + 1];
+    char hscoren[10][MAX_NAME_LEN];
 } s_savescore;
 
 typedef struct
@@ -1760,14 +1755,14 @@ typedef struct entity
     int mp; // current mp
     int oldhealth;
     int oldmp; //mp's variable for mp for players by tails
-    char name[MAX_NAME_LEN + 1]; // this is display name
+    char name[MAX_NAME_LEN]; // this is display name
     s_model *defaultmodel; // this is the default model
     s_model *model; // current model
     s_model modeldata; // model data copyied here
     int item; // item model id
     int itemmap; // Now items spawned can have their properties changed
     int itemtrans; // alpha effect of item
-    char itemalias[MAX_NAME_LEN + 1]; // Now items spawned can have their properties changed
+    char itemalias[MAX_NAME_LEN]; // Now items spawned can have their properties changed
     int itemhealth; // Now items spawned can have their properties changed
     int itemplayer_count;
     int boss;
@@ -1903,7 +1898,7 @@ typedef struct entity
 
 typedef struct
 {
-    char name[MAX_NAME_LEN + 1];
+    char name[MAX_NAME_LEN];
     int colourmap;
     unsigned score;
     unsigned lives;
@@ -1940,7 +1935,7 @@ typedef struct
     s_axis_i_2d light; // light direction, for gfx shadow
     int shadowcolor; // -1 no shadow
     int shadowalpha;
-    char music[128];
+    char music[MAX_BUFFER_LEN];
     float musicfade;
     u32 musicoffset;
     char *name; // must be a name in the model list, so just reference
@@ -1960,9 +1955,9 @@ typedef struct
     int itemplayer_count; // spawn the item according to the amount of players
     s_model *itemmodel;
     s_model *model;
-    char alias[MAX_NAME_LEN + 1];
+    char alias[MAX_NAME_LEN];
     char *item; // must be a name in the model list, so just reference
-    char itemalias[MAX_NAME_LEN + 1];
+    char itemalias[MAX_NAME_LEN];
     int itemhealth;
     int health[MAX_PLAYERS];
     int mp; // mp's variable for mpbar by tails
@@ -2115,7 +2110,7 @@ typedef struct
     int bgdir; // Used to set which direction the backgrounds scroll for autoscrolling backgrounds
     int mirror;
     int bosses;
-    char bossmusic[256];
+    char bossmusic[MAX_BUFFER_LEN];
     unsigned bossmusic_offset;
     int numpalettes;
     unsigned char (*palettes)[1024];//dynamic palettes
@@ -2167,6 +2162,7 @@ typedef struct ArgList
 
 #define GET_FRAME_ARG(z) (stricmp(GET_ARG(z), "this")==0?newanim->numframes:GET_INT_ARG(z))
 
+void    unfrozen(entity *e);
 int     buffer_pakfile(char *filename, char **pbuffer, size_t *psize);
 int     getsyspropertybyindex(ScriptVariant *var, int index);
 int     changesyspropertybyindex(int index, ScriptVariant *value);

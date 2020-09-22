@@ -199,7 +199,7 @@ int findPaks(void)
 					free(copy); copy = NULL;
 				}
 				memset(&filelist[i], 0, sizeof(fileliststruct));
-				strncpy(filelist[i].filename, ds->d_name, strlen(ds->d_name));
+				strcpy(filelist[i].filename, ds->d_name);
 				i++;
 			}
 		}
@@ -478,7 +478,7 @@ void initMenu(int type)
 		bgscreen = pngToScreen(isWide ? (void*) openbor_logo_480x272_png.data : (void*) openbor_logo_320x240_png.data);
 	else
 		bgscreen = pngToScreen(isWide ? (void*) openbor_menu_480x272_png.data : (void*) openbor_menu_320x240_png.data);
-	// CRxTRDude - Initialize log screen images		
+	// CRxTRDude - Initialize log screen images
 	logscreen = pngToScreen(isWide ? (void*) logviewer_480x272_png.data : (void*) logviewer_320x240_png.data);
 
 	control_init(2);
@@ -513,13 +513,14 @@ void drawMenu()
 	{
 		if(list<18)
 		{
+		        int len = strlen(filelist[list+dListScrollPosition].filename)-4;
 			shift = 0;
 			colors = GRAY;
 			strncpy(listing, "", (isWide ? 44 : 28));
-			if(strlen(filelist[list+dListScrollPosition].filename)-4 < (isWide ? 44 : 28))
-				strncpy(listing, filelist[list+dListScrollPosition].filename, strlen(filelist[list+dListScrollPosition].filename)-4);
-			if(strlen(filelist[list+dListScrollPosition].filename)-4 > (isWide ? 44 : 28))
-				strncpy(listing, filelist[list+dListScrollPosition].filename, (isWide ? 44 : 28));
+			if(len < (isWide ? 44 : 28))
+                            safe_strncpy(listing, filelist[list+dListScrollPosition].filename, len);
+			else
+                            safe_strncpy(listing, filelist[list+dListScrollPosition].filename, (isWide ? 44 : 28));
 			if(list == dListCurrentPosition)
 			{
 				shift = 2;
@@ -574,6 +575,7 @@ void drawBGMPlayer()
 	char t1[64] = "", t2[25] = "Unknown";
 	char a1[64] = "", a2[25] = "Unknown";
 	int list = 0, colors = 0, shift = 0;
+	int filename_len = strlen(filelist[bgmCurrent].filename)-4;
 
 	// Allocate Preview Box for Music Text Info.
 	putscreen(vscreen,bgscreen,0,0,NULL);
@@ -583,13 +585,14 @@ void drawBGMPlayer()
 	{
 		if(list<18)
 		{
+		        int len = strlen(filelist[list+dListScrollPosition].filename)-4;
 			shift = 0;
 			colors = GRAY;
 			strncpy(listing, "", (isWide ? 44 : 28));
-			if(strlen(filelist[list+dListScrollPosition].filename)-4 < (isWide ? 44 : 28))
-				strncpy(listing, filelist[list+dListScrollPosition].filename, strlen(filelist[list+dListScrollPosition].filename)-4);
-			if(strlen(filelist[list+dListScrollPosition].filename)-4 > (isWide ? 44 : 28))
-				strncpy(listing, filelist[list+dListScrollPosition].filename, (isWide ? 44 : 28));
+			if(len < (isWide ? 44 : 28))
+				safe_strncpy(listing, filelist[list+dListScrollPosition].filename, len);
+			else
+				safe_strncpy(listing, filelist[list+dListScrollPosition].filename, (isWide ? 44 : 28));
 			if(list==dListCurrentPosition) { shift = 2; colors = RED; }
 			printText((isWide ? 30 : 7) + shift, (isWide ? 33 : 22)+(11*list) , colors, 0, 0, "%s", listing);
 		}
@@ -618,18 +621,18 @@ void drawBGMPlayer()
 #endif
 
 	if(!bgmPlay) bgmCurrent = dListCurrentPosition+dListScrollPosition;
-	if(strlen(filelist[bgmCurrent].filename)-4 < 24)
-		strncpy(bgmListing, filelist[bgmCurrent].filename, strlen(filelist[bgmCurrent].filename)-4);
-	if(strlen(filelist[bgmCurrent].filename)-4 > 24)
-		strncpy(bgmListing, filelist[bgmCurrent].filename, 24);
+	if(filename_len < 24)
+		safe_strncpy(bgmListing, filelist[bgmCurrent].filename, filename_len);
+	else
+		safe_strncpy(bgmListing, filelist[bgmCurrent].filename, 24);
 	if(!sound_query_music(a1, t1))
 	{
 		PlayBGM();
 		sound_query_music(a1, t1);
 		StopBGM();
 	}
-	if(t1[0]) strncpy(t2, t1, 25);
-	if(a1[0]) strncpy(a2, a1, 25);
+	if(t1[0]) safe_strncpy(t2, t1, 25);
+	if(a1[0]) safe_strncpy(a2, a1, 25);
 	printText((isWide ? 288 : 157),(isWide ? 35 : 23) + (11 * 0), DARK_RED, 0, 0, "Game: %s", bgmListing);
 	printText((isWide ? 288 : 157),(isWide ? 35 : 23) + (11 * 1), bgmPlay ? DARK_GREEN : DARK_BLUE, 0, 0, "Total Tracks: %d", filelist[bgmCurrent].nTracks-1);
 	printText((isWide ? 288 : 157),(isWide ? 35 : 23) + (11 * 2), bgmPlay ? DARK_GREEN : DARK_BLUE, 0, 0, "Current Track: %d", filelist[bgmCurrent].bgmTrack);

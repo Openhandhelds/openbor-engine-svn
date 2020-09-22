@@ -25,15 +25,15 @@
 #undef exit
 #endif
 
-char packfile[128] = {"bor.pak"};
+char packfile[MAX_FILENAME_LEN] = {"bor.pak"};
 #if ANDROID
 #include <unistd.h>
-char rootDir[128] = {"/mnt/sdcard/OpenBOR"};
+char rootDir[MAX_FILENAME_LEN] = {"/mnt/sdcard/OpenBOR"};
 #endif
-char paksDir[128] = {"Paks"};
-char savesDir[128] = {"Saves"};
-char logsDir[128] = {"Logs"};
-char screenShotsDir[128] = {"ScreenShots"};
+char paksDir[MAX_FILENAME_LEN] = {"Paks"};
+char savesDir[MAX_FILENAME_LEN] = {"Saves"};
+char logsDir[MAX_FILENAME_LEN] = {"Logs"};
+char screenShotsDir[MAX_FILENAME_LEN] = {"ScreenShots"};
 
 void borExit(int reset)
 {
@@ -52,7 +52,7 @@ void borExit(int reset)
 int main(int argc, char *argv[])
 {
 #ifndef SKIP_CODE
-	char pakname[256];
+	char pakname[MAX_FILENAME_LEN];
 #endif
 #ifdef CUSTOM_SIGNAL_HANDLER
 	struct sigaction sigact;

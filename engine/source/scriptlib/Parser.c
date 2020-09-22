@@ -208,16 +208,16 @@ void Parser_Match( Parser *pparser )
 ******************************************************************************/
 Label Parser_CreateLabel( Parser *pparser )
 {
-    //Allocate a buffer for the new Label.  A long can take 10 characters at
+    //Allocate a buffer for the new Label.  A long can take 10 or 11 characters at
     //most, so allocate that plus two extra for the "" and the null
-    //terminator
-    Label theLabel = (CHAR *)malloc(12);
-    memset(theLabel, 0, 12);
+    //terminator (11 characters are possible with minus sign)
+    Label theLabel = (CHAR *)malloc(13);
+    memset(theLabel, 0, 13);
 
     //Increment the label count.
     pparser->LabelCount++;
 
-    sprintf(theLabel, "L%d", pparser->LabelCount);
+    sprintf(theLabel, "L%ld", (long)pparser->LabelCount);
 
     return theLabel;
 }
@@ -1802,7 +1802,7 @@ void Parser_Mult_expr2(Parser *pparser )
 
 void Parser_Unary_expr(Parser *pparser )
 {
-    static CHAR buf[MAX_TOKEN_LENGTH + 1];
+    static CHAR buf[MAX_TOKEN_LENGTH + 2];
     Instruction *pInstruction = NULL;
 
     if (ParserSet_First(&(pparser->theParserSet), postfix_expr, pparser->theNextToken.theType ))

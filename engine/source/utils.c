@@ -98,8 +98,8 @@
 #define OPEN_LOGFILE(type)   type ? fopen("./Logs/OpenBorLog.txt", "wt") : fopen("./Logs/ScriptLog.txt", "wt")
 #define APPEND_LOGFILE(type) type ? fopen("./Logs/OpenBorLog.txt", "at") : fopen("./Logs/ScriptLog.txt", "at")
 #define READ_LOGFILE(type)   type ? fopen("./Logs/OpenBorLog.txt", "rt") : fopen("./Logs/ScriptLog.txt", "rt")
-#define COPY_ROOT_PATH(buf, name) strncpy(buf, "./", 2); strncat(buf, name, strlen(name)); strncat(buf, "/", 1);
-#define COPY_PAKS_PATH(buf, name) strncpy(buf, "./Paks/", 7); strncat(buf, name, strlen(name));
+#define COPY_ROOT_PATH(buf, name) strcpy(buf, "./"); strcat(buf, name); strcat(buf, "/");
+#define COPY_PAKS_PATH(buf, name) strcpy(buf, "./Paks/"); strcat(buf, name);
 #endif
 
 void debugBuf(unsigned char *buf, size_t size, int columns)
@@ -154,7 +154,7 @@ u32 debug_time = 0;
 void getBasePath(char *newName, char *name, int type)
 {
 #ifndef DC
-    char buf[128] = {""};
+    char buf[MAX_BUFFER_LEN] = {""};
     switch(type)
     {
     case 0:
@@ -164,9 +164,9 @@ void getBasePath(char *newName, char *name, int type)
         COPY_PAKS_PATH(buf, name);
         break;
     }
-    memcpy(newName, buf, sizeof(buf));
+    strcpy(newName, buf);
 #else
-    memcpy(newName, name, 128);
+    strncpy(newName, name, MAX_LABEL_LEN - 1);
 #endif
 }
 
@@ -175,14 +175,14 @@ void getBasePath(char *newName, char *name, int type)
 #ifndef DC
 int dirExists(char *dname, int create)
 {
-    char realName[128] = {""};
+    char realName[MAX_LABEL_LEN] = {""};
 #ifdef XBOX
     getBasePath(realName, dname, 0);
     return CreateDirectory(realName, NULL);
 #else
     DIR	*fd1 = NULL;
     int  fd2 = -1;
-    strncpy(realName, dname, 128);
+    strncpy(realName, dname, MAX_LABEL_LEN - 1);
     fd1 = opendir(realName);
     if(fd1 != NULL)
     {
@@ -330,24 +330,24 @@ void getPakName(char *name, int type)
     int i, x, y;
     char mod[256] = {""};
 
-    strncpy(mod, packfile, strlen(packfile) - 4);
+    memcpy(mod, packfile, strlen(packfile) - 4);
 
     switch(type)
     {
     case 0:
-        strncat(mod, ".sav", 4);
+        strcat(mod, ".sav");
         break;
     case 1:
-        strncat(mod, ".hi", 3);
+        strcat(mod, ".hi");
         break;
     case 2:
-        strncat(mod, ".scr", 4);
+        strcat(mod, ".scr");
         break;
     case 3:
-        strncat(mod, ".inp", 4);
+        strcat(mod, ".inp");
         break;
     case 4:
-        strncat(mod, ".cfg", 4);
+        strcat(mod, ".cfg");
         break;
     default:
         // Loose extension!
@@ -385,8 +385,8 @@ void screenshot(s_screen *vscreen, unsigned char *pal, int ingame)
 {
 #ifndef DC
     int	 shotnum = 0;
-    char shotname[128] = {""};
-    char modname[128]  = {""};
+    char shotname[1024] = {""};
+    char modname[]  = {""};
 
     getPakName(modname, 99);
 #ifdef PSP
@@ -612,6 +612,67 @@ char *commaprint(u64 n)
     return p;
 }
 
+char* safe_strncpy(char* dst, const char* src, size_t size)
+{
+	if (size > 0) {
+		register char *d = dst;
+		register const char *s = src;
+
+		do {
+			if ((*d++ = *s++) == 0) {
+				/* NUL pad the remaining n-1 bytes */
+				while (--size > 0) *d++ = 0;
+				break;
+			}
+		} while (--size > 0);
+		*d = 0;
+	}
+	return (dst);
+}
+
+int safe_stricmp(const char *s1, const char *s2)
+{
+    for (;;) {
+        if (*s1 != *s2) {
+            int c1 = toupper((unsigned char)*s1);
+            int c2 = toupper((unsigned char)*s2);
+
+            if (c2 != c1) {
+                return c2 > c1 ? -1 : 1;
+            }
+        } else {
+            if (*s1 == '\0') {
+                return 0;
+            }
+        }
+        ++s1;
+        ++s2;
+    }
+}
+
+int safe_strnicmp(const char *s1, const char *s2, size_t n)
+{
+    for (;;) {
+        if (n-- == 0) {
+            return 0;
+        }
+        if (*s1 != *s2) {
+            int c1 = toupper((unsigned char)*s1);
+            int c2 = toupper((unsigned char)*s2);
+
+            if (c2 != c1) {
+                return c2 > c1 ? -1 : 1;
+            }
+        } else {
+            if (*s1 == '\0') {
+                return 0;
+            }
+        }
+        ++s1;
+        ++s2;
+    }
+}
+
 //! Increase or Decrease an array à la \e vector
 /**
 	\param f_caller : name of the calling function for logging purpose
@@ -687,6 +748,111 @@ Array_Check_Size( const char *f_caller, char **array, int new_size, int *curr_si
     *array = copy;
 }
 
+
+int iscValidSign(char c) {
+    if(c == '-')
+        return -1;
+    if(c == '+')
+        return 1;
+    return 0;
+}
+
+int32_t iscValidNumber(char c) {
+    if(c >= '0' && c <= '9')
+        return c-'0';
+    return -1;
+}
+
+int isValueOverflow(int32_t value, int32_t sign, int32_t number) {
+
+    int32_t minmax = sign > 0 ? INT32_MAX : INT32_MIN;
+    int32_t signed_value = sign * value;
+    /* use base 10 */
+    if(minmax == INT32_MAX) {
+        if (signed_value < minmax / 10)
+            return 0;
+        else {
+            if (signed_value==minmax / 10) {
+                if (number<=minmax % 10)
+                    return 0;
+            }
+        }
+    }
+    else /* INT32_MIN */
+    {
+        if (signed_value > minmax / 10)
+            return 0;
+        else {
+            if (signed_value == minmax / 10) {
+                if (sign * number >= minmax % 10)
+                    return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+int32_t safe_atoi(char* str, unsigned char* errSeveralSigns, unsigned char* errInvalidNumberFound, unsigned char* errOverflow) {
+    char* itStr = str;
+    int32_t sign = 0, value = 0, number = -1;
+
+    if(errSeveralSigns)
+        *errSeveralSigns = 0;
+    if(errInvalidNumberFound)
+        *errInvalidNumberFound = 0;
+    if(errOverflow)
+        *errOverflow = 0;
+    while(*itStr != '\0') {
+        if(*itStr == ' ') {
+            itStr++;
+            continue;
+        }
+        if(sign != 0 && iscValidSign(*itStr)) {
+            value = sign > 0 ? INT32_MAX : INT32_MIN;
+#ifdef VERBOSE
+            printf("Several signs in the number\n");
+#endif
+            if(errSeveralSigns)
+                *errSeveralSigns = UCHAR_MAX;
+            break;
+        }
+
+        if(sign == 0) {
+            sign = iscValidSign(*itStr);
+            if(sign != 0) {
+                itStr++;
+                continue;
+            }
+        }
+        number = iscValidNumber(*itStr);
+        if(number == -1) {
+            value = 0;
+#ifdef VERBOSE
+            printf("Invalid number found (%ld) !!\n", itStr - str);
+#endif
+            if(errInvalidNumberFound)
+                *errInvalidNumberFound = UCHAR_MAX;
+            break;
+        }
+        if(sign == 0 && number != -1)
+            sign = 1;
+
+        if(isValueOverflow(value, sign, number) == 0) {
+            value = value * 10 + number;
+        }
+        else {
+            value = sign > 0 ? INT32_MAX : INT32_MIN;
+#ifdef VERBOSE
+            printf("Overflow (%ld) !!\n", itStr - str);
+#endif
+            if(errOverflow)
+                *errOverflow = UCHAR_MAX;
+            break;
+        }
+        itStr++;
+    }
+    return sign * value;
+}
 
 // don't ask; go to Wikipedia if you have no fear:
 // http://en.wikipedia.org/wiki/Fast_inverse_square_root

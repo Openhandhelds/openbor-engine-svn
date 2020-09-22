@@ -15,6 +15,8 @@
 #define GL_GLEXT_PROTOTYPES
 #endif
 
+#define NO_SDL_GLEXT
+
 #ifdef GLES
 #include "SDL_opengles.h"
 #elif WIN

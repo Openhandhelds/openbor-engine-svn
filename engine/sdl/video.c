@@ -26,7 +26,12 @@
 #include "vga.h"
 #include "screen.h"
 #include "sdlport.h"
+#ifdef PANDORA
 #include "opengl.h"
+#include "SDL_opengles.h"
+#else
+#include "opengl.h"
+#endif
 #include "openbor.h"
 #include "gfxtypes.h"
 #include "gfx.h"
@@ -58,8 +63,13 @@ static SDL_Surface *bscreen2 = NULL;
 static SDL_Color colors[256];
 static int bytes_per_pixel = 1;
 int stretch = 0;
+#ifdef PANDORA
+int opengl = 1;
+int nativeWidth = 800, nativeHeight = 480;
+#else
 int opengl = 0; // OpenGL backend currently in use?
 int nativeWidth, nativeHeight; // monitor resolution used in fullscreen mode
+#endif
 u8 pDeltaBuffer[480 * 2592];
 
 SDL_Surface* getSDLScreen()

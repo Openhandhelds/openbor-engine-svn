@@ -238,8 +238,8 @@ cont:
 static char *slashback(const char *sz)
 {
     int i = 0;
-    static char new[256];
-    while(sz[i] && i < 255)
+    static char new[PACKFILE_PATH_MAX];
+    while(sz[i] && i < PACKFILE_PATH_MAX - 1)
     {
         new[i] = sz[i];
         if(new[i] == '/')
@@ -258,8 +258,8 @@ static char *slashback(const char *sz)
 static char *slashfwd(const char *sz)
 {
     int i = 0;
-    static char new[256];
-    while(sz[i] && i < 255)
+    static char new[PACKFILE_PATH_MAX];
+    while(sz[i] && i < PACKFILE_PATH_MAX - 1)
     {
         new[i] = sz[i];
         if(new[i] == '\\')
@@ -278,8 +278,8 @@ char *casesearch(const char *dir, const char *filepath)
 {
     DIR *d;
     struct dirent *entry;;
-    char filename[256] = {""}, *rest_of_path;
-    static char fullpath[256];
+    char filename[PACKFILE_PATH_MAX] = {""}, *rest_of_path;
+    static char fullpath[PACKFILE_PATH_MAX];
     int i = 0;
 #ifdef VERBOSE
     printf("casesearch: %s, %s\n", dir, filepath);
@@ -315,9 +315,22 @@ char *casesearch(const char *dir, const char *filepath)
         }
     }
 
-    if (entry != NULL && entry->d_name != NULL)
+    //if (entry != NULL && entry->d_name != NULL)
+    if (entry != NULL)
     {
-        sprintf(fullpath, "%s/%s", dir, entry->d_name);
+        size_t szDir = strlen(dir);
+        size_t szDName = strlen(entry->d_name);
+        char * ptrFullpath = NULL;
+        if(szDir + szDName + 1	< PACKFILE_PATH_MAX)
+        {
+            memcpy(fullpath, dir, szDir);
+            fullpath[szDir] = '/';
+            ptrFullpath = fullpath + (szDir + 1);
+            memcpy(ptrFullpath, entry->d_name, szDName);
+            fullpath[szDir + szDName + 1] = '\0';
+        }
+        else
+            i = 0;
     }
 
     if (closedir(d))
@@ -371,6 +384,7 @@ void packfile_mode(int mode)
 
 /////////////////////////////////////////////////////////////////////////////
 
+#if WIN || LINUX
 int isRawData()
 {
     DIR *d;
@@ -381,6 +395,7 @@ int isRawData()
     closedir(d);
     return 1;
 }
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -598,7 +613,7 @@ void update_filecache_vfd(int vfd)
 void makefilenamecache(void)
 {
     ptrdiff_t hpos;
-    char target[256];
+    char target[PACKFILE_PATH_MAX];
 
     if(!filenamelist)
     {
@@ -615,7 +630,7 @@ void makefilenamecache(void)
         {
             return;
         }
-        strncpy(target, (char *)pak_header + hpos + 12, 256);
+        strncpy(target, (char *)pak_header + hpos + 12, PACKFILE_PATH_MAX - 1);
         fnlc(target);
         List_InsertAfter(filenamelist, (void *) hpos, target);
         hpos += readlsb32(pak_header + hpos);
@@ -669,7 +684,7 @@ int openreadaheadpackfile(const char *filename, const char *packfilename, int re
     int vfd;
     size_t fnl;
     size_t al;
-    char target[256];
+    char target[PACKFILE_PATH_MAX];
     Node *n;
 
     if(packfilename != packfile)
@@ -1430,7 +1445,7 @@ void packfile_music_read(fileliststruct *filelist, int dListTotal)
         getBasePath(packfile, filelist[i].filename, 1);
         if(stristr(packfile, ".pak"))
         {
-            memset(filelist[i].bgmTracks, 0, 256);
+            memset(filelist[i].bgmTracks, 0, MAX_TRACKS * sizeof(unsigned int));
             filelist[i].nTracks = 0;
             fd = fopen(packfile, "rb");
             if(fd == NULL)
@@ -1462,7 +1477,7 @@ void packfile_music_read(fileliststruct *filelist, int dListTotal)
                     {
                         goto nextpak;
                     }
-                    if(filelist[i].nTracks < 256)
+                    if(filelist[i].nTracks < MAX_TRACKS)
                     {
                         packfile_get_titlename(pn.namebuf, filelist[i].bgmFileName[filelist[i].nTracks]);
                         filelist[i].bgmTracks[filelist[i].nTracks] = off;

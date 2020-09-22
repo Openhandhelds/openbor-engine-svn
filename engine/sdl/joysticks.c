@@ -374,10 +374,35 @@ char* OPENDINGUX_GetKeyName(int keycode)
 }
 #endif
 
+#ifdef PANDORA
+char* PANDORA_GetKeyName(int keycode)
+{
+	if (keycode == PANDORA_BUTTON_SELECT)  return "Select";
+	else if (keycode == PANDORA_BUTTON_START)   return "Start";
+	else if (keycode == PANDORA_BUTTON_UP)      return "Up";
+	else if (keycode == PANDORA_BUTTON_DOWN)    return "Down";
+	else if (keycode == PANDORA_BUTTON_LEFT)    return "Left";
+	else if (keycode == PANDORA_BUTTON_RIGHT)   return "Right";
+	else if (keycode == PANDORA_BUTTON_A)       return "A";
+	else if (keycode == PANDORA_BUTTON_X)       return "X";
+	else if (keycode == PANDORA_BUTTON_Y)       return "Y";
+	else if (keycode == PANDORA_BUTTON_B)       return "B";
+	else if (keycode == PANDORA_BUTTON_L1)      return "L1";
+	else if (keycode == PANDORA_BUTTON_R1)      return "R1";
+#ifdef SDL2
+	else return (char*)SDL_GetScancodeName(keycode);
+#else
+	else return (char*)SDL_GetKeyName(keycode);
+#endif
+}
+#endif
+
 char* JOY_GetKeyName(int keycode)
 {
 #ifdef OPENDINGUX
 	return OPENDINGUX_GetKeyName(keycode);
+#elif PANDORA
+	return PANDORA_GetKeyName(keycode);
 #elif ANDROID || DARWIN || SDL2
 	return (char*)SDL_GetScancodeName(keycode);
 #else
