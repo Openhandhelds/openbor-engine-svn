@@ -44,9 +44,10 @@ void borExit(int reset)
 	execl("/usr/gp2x/gp2xmenu", "/usr/gp2x/gp2xmenu", NULL);
 #else
 	SDL_Delay(1000);
+	SDL_Quit(); // call this instead of atexit(SDL_Quit); It's best practice!
 #endif
 
-	appExit(0);
+	exit(reset);
 }
 
 int main(int argc, char *argv[])

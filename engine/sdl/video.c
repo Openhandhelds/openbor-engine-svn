@@ -89,7 +89,7 @@ void initSDL()
 		borExit(0);
 	}
 	SDL_ShowCursor(SDL_DISABLE);
-	atexit(SDL_Quit);
+	//atexit(SDL_Quit); //White Dragon: use SDL_Quit() into sdlport.c it's best practice!
 
 	// TODO OpenGL
 #if 0 // WIN || LINUX && !DARWIN && !defined(GLES)
@@ -122,7 +122,6 @@ void initSDL()
 		borExit(0);
 	}
 	SDL_ShowCursor(SDL_DISABLE);
-	atexit(SDL_Quit);
 #ifndef SKIP_CODE
 	SDL_WM_SetCaption("OpenBOR", NULL);
 	SDL_WM_SetIcon((SDL_Surface*)pngToSurface((void*)openbor_icon_32x32_png.data), NULL);
@@ -161,6 +160,12 @@ static unsigned masks[4][4] = {{0,0,0,0},{0x1F,0x07E0,0xF800,0},{0xFF,0xFF00,0xF
 // Function to set the video mode on any SDL version (1.2 or 2.0)
 SDL_Surface* SetVideoMode(int w, int h, int bpp, bool gl)
 {
+	int flags = SDL_HWSURFACE|SDL_DOUBLEBUF;
+#ifdef PANDORA
+	flags |= SDL_OPENGL;
+	savedata.fullscreen = 1;
+#endif
+	if(savedata.fullscreen) flags |= SDL_FULLSCREEN;
 #if SDL2
 	int x = SDL_WINDOWPOS_UNDEFINED;
 	int y = SDL_WINDOWPOS_UNDEFINED;
@@ -195,9 +200,14 @@ SDL_Surface* SetVideoMode(int w, int h, int bpp, bool gl)
 	if(gl) return NULL;
 	else return SDL_CreateRGBSurface(0, w, h, bpp, masks[bpp/8-1][2], masks[bpp/8-1][1], masks[bpp/8-1][0], masks[bpp/8-1][3]);
 #elif defined(OPENDINGUX)
-	return SDL_SetVideoMode(w, h, bpp, savedata.fullscreen?(SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN):(SDL_HWSURFACE|SDL_DOUBLEBUF));
+	return SDL_SetVideoMode(w, h, bpp, flags);
 #else
-	return SDL_SetVideoMode(w, h, bpp, savedata.fullscreen?(SDL_SWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN):(SDL_SWSURFACE|SDL_DOUBLEBUF));
+#ifdef PANDORA
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+#endif
+	return SDL_SetVideoMode(w, h, bpp, flags);
 #endif
 }
 
